@@ -1,0 +1,87 @@
+{
+  "compare_entity:web_app": [
+    151,
+    234,
+    68
+  ],
+  "modifier:casual": [
+    178,
+    192,
+    173
+  ],
+  "modifier:cozy": [
+    225,
+    154,
+    184
+  ],
+  "modifier:farming": [
+    168,
+    162,
+    125
+  ],
+  "modifier:surreal": [
+    121,
+    249,
+    149
+  ],
+  "modifier:weird": [
+    3,
+    138,
+    137
+  ],
+  "negation:grindy": [
+    33,
+    77,
+    42
+  ],
+  "object:dashboard": [
+    111,
+    67,
+    22
+  ],
+  "object:roguelike": [
+    113,
+    167,
+    159
+  ],
+  "object:simulator": [
+    107,
+    154,
+    230
+  ],
+  "topic:compression_method_a": [
+    3,
+    192,
+    195
+  ],
+  "topic:compression_method_b": [
+    34,
+    203,
+    85
+  ],
+  "topic:food_waste": [
+    224,
+    30,
+    247
+  ],
+  "topic:mushrooms": [
+    102,
+    147,
+    14
+  ],
+  "topic:oranges": [
+    165,
+    82,
+    150
+  ],
+  "topic:semantic_memory": [
+    14,
+    145,
+    4
+  ],
+  "topic:strawberries": [
+    156,
+    94,
+    38
+  ]
+}

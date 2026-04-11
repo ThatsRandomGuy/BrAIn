@@ -1,0 +1,638 @@
+from __future__ import annotations
+
+from typing import Dict, List, Sequence
+
+
+def _memory_case(
+    *,
+    case_id: str,
+    description: str,
+    turns: Sequence[str],
+    expected_keywords: Sequence[str],
+    memory_fidelity_keywords: Sequence[str],
+    corrected_facts: Sequence[str] | None = None,
+    expected_recall_facts: Sequence[str] | None = None,
+    forbidden_errors: Sequence[str] | None = None,
+) -> Dict[str, object]:
+    return {
+        "case_id": case_id,
+        "category": "memory_recall",
+        "benchmark_category": "memory_recall",
+        "description": description,
+        "turns": list(turns),
+        "expected_keywords": list(expected_keywords),
+        "constraint_keywords": [],
+        "memory_fidelity_keywords": list(memory_fidelity_keywords),
+        "expected_recall_facts": list(expected_recall_facts or memory_fidelity_keywords),
+        "corrected_facts": list(corrected_facts or []),
+        "required_constraints": [],
+        "forbidden_errors": list(forbidden_errors or []),
+        "expected_next_step_patterns": [],
+    }
+
+
+def _planning_case(
+    *,
+    case_id: str,
+    description: str,
+    turns: Sequence[str],
+    expected_keywords: Sequence[str],
+    constraint_keywords: Sequence[str],
+    required_constraints: Sequence[str] | None = None,
+    forbidden_errors: Sequence[str] | None = None,
+    expected_next_step_patterns: Sequence[str] | None = None,
+) -> Dict[str, object]:
+    return {
+        "case_id": case_id,
+        "category": "planning_request",
+        "benchmark_category": "structured_planning",
+        "description": description,
+        "turns": list(turns),
+        "expected_keywords": list(expected_keywords),
+        "constraint_keywords": list(constraint_keywords),
+        "memory_fidelity_keywords": [],
+        "expected_recall_facts": [],
+        "corrected_facts": [],
+        "required_constraints": list(required_constraints or constraint_keywords),
+        "forbidden_errors": list(forbidden_errors or []),
+        "expected_next_step_patterns": list(expected_next_step_patterns or []),
+    }
+
+
+# Keep benchmark categories stable so future non-token / grid-based internal
+# representations can still be compared at the same task boundary.
+CORE_CASES: List[Dict[str, object]] = [
+    {
+        "case_id": "factual_sky",
+        "category": "factual_question",
+        "benchmark_category": "factual_qa",
+        "description": "Simple factual question.",
+        "turns": ["What color is the sky?"],
+        "expected_keywords": ["blue", "day"],
+        "constraint_keywords": [],
+        "memory_fidelity_keywords": [],
+    },
+    {
+        "case_id": "factual_battery",
+        "category": "factual_question",
+        "benchmark_category": "factual_qa",
+        "description": "Simple factual battery question.",
+        "turns": ["What does a laptop battery do?"],
+        "expected_keywords": ["power", "laptop", "battery"],
+        "constraint_keywords": [],
+        "memory_fidelity_keywords": [],
+    },
+    _planning_case(
+        case_id="planning_clarify_task",
+        description="Abstract planning prompt that should clarify before reasoning.",
+        turns=["Help me finish my task safely.", "Charging my laptop before I leave."],
+        expected_keywords=["charge", "laptop", "safe"],
+        constraint_keywords=["safe", "before", "leave"],
+    ),
+    _planning_case(
+        case_id="planning_direct_charge",
+        description="Concrete planning task.",
+        turns=["Help me charge my laptop safely."],
+        expected_keywords=["charge", "laptop", "safe"],
+        constraint_keywords=["safe", "charger", "monitor"],
+    ),
+    _planning_case(
+        case_id="multistep_charge",
+        description="Multi-step planning for charging.",
+        turns=["What is the safest step-by-step way to charge my laptop?"],
+        expected_keywords=["charge", "laptop", "safe", "step"],
+        constraint_keywords=["monitor", "disconnect", "power"],
+        expected_next_step_patterns=["inspect", "connect", "monitor", "disconnect"],
+    ),
+    _planning_case(
+        case_id="goal_clarify_options",
+        description="Goal choice prompt that should clarify options first.",
+        turns=["Which option best fits my goals?", "Charging my laptop now or waiting until later."],
+        expected_keywords=["charge", "later", "goal", "option"],
+        constraint_keywords=["goal", "option", "choose"],
+    ),
+    _planning_case(
+        case_id="goal_tradeoff_charge",
+        description="Goal tradeoff prompt around charging.",
+        turns=["Which option best fits my goals: charge my laptop now or preserve battery longevity?"],
+        expected_keywords=["charge", "battery", "longevity", "goal"],
+        constraint_keywords=["goal", "option", "battery"],
+        expected_next_step_patterns=["option", "goal", "battery"],
+    ),
+    _planning_case(
+        case_id="hybrid_charge_context",
+        description="Hybrid prompt that should use goal context plus direct answer wording.",
+        turns=[
+            "My goal is to charge my laptop safely without damaging the battery.",
+            "Use what you know about my goals and tell me the safest way to charge my laptop.",
+        ],
+        expected_keywords=["goal", "charge", "laptop", "battery", "safe"],
+        constraint_keywords=["safe", "battery", "goal"],
+    ),
+    _memory_case(
+        case_id="memory_earlier_question",
+        description="Recall a prior user prompt.",
+        turns=["Help me charge my laptop safely.", "What did I ask earlier?"],
+        expected_keywords=["ask", "earlier", "charge"],
+        memory_fidelity_keywords=["charge", "laptop", "safely"],
+    ),
+    _memory_case(
+        case_id="memory_last_planning",
+        description="Recall the last planning prompt.",
+        turns=["Help me finish my task safely.", "Charging my laptop before I leave.", "What was my last planning request?"],
+        expected_keywords=["last", "planning", "charge"],
+        memory_fidelity_keywords=["charging", "laptop", "before", "leave"],
+    ),
+    _memory_case(
+        case_id="memory_charge_advice",
+        description="Recall prior charging advice.",
+        turns=["Use what you know about my goals and tell me the safest way to charge my laptop.", "What did you say about charging my laptop?"],
+        expected_keywords=["charging", "laptop", "said"],
+        memory_fidelity_keywords=["charge", "laptop", "safe", "battery"],
+    ),
+    _planning_case(
+        case_id="transform_reduce_risk",
+        description="Transform a plan to lower risk.",
+        turns=["Rewrite this plan to reduce risk: plug in my laptop and leave it charging all night under a blanket."],
+        expected_keywords=["reduce", "risk", "charging", "laptop"],
+        constraint_keywords=["risk", "blanket", "night"],
+        forbidden_errors=["leave under a blanket all night"],
+    ),
+    _planning_case(
+        case_id="failure_recovery_charge",
+        description="Recovery scenario after a failed charge attempt.",
+        turns=["My laptop charge attempt failed. Help me recover safely."],
+        expected_keywords=["failed", "recover", "safe", "charge"],
+        constraint_keywords=["recover", "safe", "retry"],
+    ),
+    _planning_case(
+        case_id="ambiguous_compare_followup",
+        description="Another ambiguous comparison that needs object/options.",
+        turns=["Which option should I choose?", "Charge my laptop now or wait until I get home."],
+        expected_keywords=["option", "choose", "charge", "home"],
+        constraint_keywords=["option", "choose", "charge"],
+    ),
+    _memory_case(
+        case_id="memory_goal_context",
+        description="Recall goal-related context after a previous turn.",
+        turns=[
+            "My goal is to avoid damaging my laptop battery.",
+            "Which option best fits my goals: charge now or wait until later?",
+            "What was my goal?",
+        ],
+        expected_keywords=["goal", "battery"],
+        memory_fidelity_keywords=["avoid", "damaging", "laptop", "battery"],
+    ),
+]
+
+
+ADDITIONAL_MEMORY_CASES: List[Dict[str, object]] = [
+    _memory_case(
+        case_id="memory_preference_update_snacks",
+        description="Preference recall after an explicit update.",
+        turns=[
+            "I keep frozen berries in the pantry.",
+            "Actually, I moved the frozen berries to the freezer.",
+            "Where should you assume the frozen berries are now?",
+        ],
+        expected_keywords=["freezer"],
+        memory_fidelity_keywords=["freezer", "frozen berries"],
+        corrected_facts=["freezer"],
+        forbidden_errors=["pantry"],
+    ),
+    _memory_case(
+        case_id="memory_food_preference_correction",
+        description="Recall current food preference after a correction.",
+        turns=[
+            "I do not eat peanuts, but almonds are fine.",
+            "Correction: almonds also bother me, but cashews are okay.",
+            "What nuts should you currently assume are okay for me?",
+        ],
+        expected_keywords=["cashews"],
+        memory_fidelity_keywords=["cashews"],
+        corrected_facts=["cashews"],
+        forbidden_errors=["almonds", "peanuts"],
+    ),
+    _memory_case(
+        case_id="memory_project_progress_status",
+        description="Recall current project milestone state after updates.",
+        turns=[
+            "For the mobile app project, login is done, onboarding is in progress, and billing has not started.",
+            "Update: onboarding is now done and billing is blocked on legal review.",
+            "What is the current project status?",
+        ],
+        expected_keywords=["login", "done", "onboarding", "billing", "legal review"],
+        memory_fidelity_keywords=["login", "done", "onboarding", "done", "billing", "blocked", "legal review"],
+        corrected_facts=["onboarding done", "billing blocked"],
+    ),
+    _memory_case(
+        case_id="memory_task_state_shipping",
+        description="Recall task states after completion and blockage updates.",
+        turns=[
+            "For my shipping checklist, label printing is done, packing is in progress, and drop-off is not started.",
+            "Update: packing is done, but drop-off is delayed until tomorrow morning.",
+            "What is the current state of my shipping checklist?",
+        ],
+        expected_keywords=["label", "done", "packing", "done", "drop-off", "tomorrow"],
+        memory_fidelity_keywords=["label", "packing", "done", "drop-off", "tomorrow"],
+    ),
+    _memory_case(
+        case_id="memory_schedule_context_latest_availability",
+        description="Recall the latest schedule availability after a change.",
+        turns=[
+            "This week I am free Tuesday after 3 PM and Thursday after 1 PM.",
+            "Change that: Thursday is no longer available, but Friday after 10 AM is open.",
+            "When am I currently available this week?",
+        ],
+        expected_keywords=["tuesday", "3", "friday", "10"],
+        memory_fidelity_keywords=["tuesday", "after 3", "friday", "after 10"],
+        corrected_facts=["friday after 10"],
+        forbidden_errors=["thursday after 1"],
+    ),
+    _memory_case(
+        case_id="memory_troubleshooting_history",
+        description="Recall troubleshooting steps already tried.",
+        turns=[
+            "For the blank monitor issue, I already checked the power cable and restarted the laptop.",
+            "I also tried a different HDMI cable, but I have not tested another monitor yet.",
+            "What troubleshooting steps have I already tried?",
+        ],
+        expected_keywords=["power cable", "restarted", "hdmi cable"],
+        memory_fidelity_keywords=["power cable", "restarted", "different hdmi cable"],
+        forbidden_errors=["tested another monitor"],
+    ),
+    _memory_case(
+        case_id="memory_what_did_i_say_about_budget",
+        description="Recall what the user said about a budget after one update.",
+        turns=[
+            "My travel budget for the weekend is 400 dollars total.",
+            "Actually make that 350 dollars because I already paid for gas.",
+            "What did I say about my weekend travel budget?",
+        ],
+        expected_keywords=["350"],
+        memory_fidelity_keywords=["350", "travel budget", "weekend"],
+        corrected_facts=["350 dollars"],
+        forbidden_errors=["400"],
+    ),
+    _memory_case(
+        case_id="memory_latest_version_doc_title",
+        description="Prefer latest document title over the original title.",
+        turns=[
+            "The draft document is titled Launch Notes v1.",
+            "Rename it to Launch Notes Final Draft.",
+            "What is the current document title?",
+        ],
+        expected_keywords=["launch notes final draft"],
+        memory_fidelity_keywords=["launch notes final draft"],
+        corrected_facts=["launch notes final draft"],
+        forbidden_errors=["launch notes v1"],
+    ),
+    _memory_case(
+        case_id="memory_merged_constraint_recall",
+        description="Recall merged packing constraints after multiple additions.",
+        turns=[
+            "For tomorrow's trip, I can only bring one backpack.",
+            "I also need to keep the total weight under 8 kilograms.",
+            "And the laptop must stay in an easy-access pocket.",
+            "What packing constraints have I given you?",
+        ],
+        expected_keywords=["one backpack", "under 8", "easy-access"],
+        memory_fidelity_keywords=["one backpack", "8 kilograms", "easy-access pocket", "laptop"],
+    ),
+    _memory_case(
+        case_id="memory_world_state_evolving_room",
+        description="Recall the latest world state after several changes.",
+        turns=[
+            "In the office, the red notebook is on the desk and the charger is in the drawer.",
+            "I moved the red notebook to the shelf.",
+            "Then I took the charger out of the drawer and put it in my backpack.",
+            "What is the current office item state?",
+        ],
+        expected_keywords=["red notebook", "shelf", "charger", "backpack"],
+        memory_fidelity_keywords=["red notebook", "shelf", "charger", "backpack"],
+        corrected_facts=["shelf", "backpack"],
+        forbidden_errors=["desk", "drawer"],
+    ),
+    _memory_case(
+        case_id="memory_preference_overwrite_color",
+        description="Tests whether the system prefers the corrected preference over the original one.",
+        turns=[
+            "My favorite color is blue.",
+            "Actually, my favorite color is red now.",
+            "What is my favorite color?",
+        ],
+        expected_keywords=["red"],
+        memory_fidelity_keywords=["favorite color is red"],
+        expected_recall_facts=["favorite color is red"],
+        corrected_facts=["favorite color changed from blue to red"],
+        forbidden_errors=["blue"],
+    ),
+    _memory_case(
+        case_id="memory_merged_diet_constraints",
+        description="Tests whether multiple user constraints are merged and retained together.",
+        turns=[
+            "I can't eat dairy.",
+            "I also avoid gluten.",
+            "What two food constraints have I told you about?",
+        ],
+        expected_keywords=["dairy", "gluten"],
+        memory_fidelity_keywords=["avoid dairy", "avoid gluten"],
+        expected_recall_facts=["avoid dairy", "avoid gluten"],
+        forbidden_errors=["nuts", "soy", "eggs"],
+    ),
+    _memory_case(
+        case_id="memory_project_status_update",
+        description="Tests whether the system tracks updated project progress instead of the original state.",
+        turns=[
+            "For my app project, login is incomplete, inventory is incomplete, and recipe suggestions are incomplete.",
+            "I finished login.",
+            "What parts of the project are still incomplete?",
+        ],
+        expected_keywords=["inventory", "recipe suggestions", "incomplete"],
+        memory_fidelity_keywords=["inventory incomplete", "recipe suggestions incomplete"],
+        expected_recall_facts=["inventory incomplete", "recipe suggestions incomplete"],
+        corrected_facts=["login changed from incomplete to complete"],
+        forbidden_errors=["login incomplete"],
+    ),
+    _memory_case(
+        case_id="memory_schedule_availability_overwrite",
+        description="Tests whether updated availability replaces earlier availability.",
+        turns=[
+            "I am free Tuesday after 6 PM.",
+            "Correction: I am not free Tuesday. I am free Wednesday after 6 PM instead.",
+            "When am I free?",
+        ],
+        expected_keywords=["wednesday", "6 pm"],
+        memory_fidelity_keywords=["free wednesday after 6 pm"],
+        expected_recall_facts=["free Wednesday after 6 PM"],
+        corrected_facts=["availability changed from Tuesday after 6 PM to Wednesday after 6 PM"],
+        forbidden_errors=["Tuesday after 6 PM"],
+    ),
+    _memory_case(
+        case_id="memory_storage_location_overwrite",
+        description="Tests whether latest location replaces earlier location.",
+        turns=[
+            "Store the chicken in the fridge.",
+            "Actually, put the chicken in the freezer for long-term storage.",
+            "Where should the chicken be stored now?",
+        ],
+        expected_keywords=["freezer"],
+        memory_fidelity_keywords=["chicken stored in freezer"],
+        expected_recall_facts=["chicken stored in freezer"],
+        corrected_facts=["chicken moved from fridge to freezer"],
+        forbidden_errors=["fridge"],
+    ),
+    _memory_case(
+        case_id="memory_troubleshooting_steps_tried",
+        description="Tests whether the system remembers already-tried troubleshooting steps.",
+        turns=[
+            "My LCD is blank. I already checked power.",
+            "I also checked the contrast potentiometer.",
+            "What two troubleshooting steps have I already tried?",
+        ],
+        expected_keywords=["checked power", "checked contrast potentiometer"],
+        memory_fidelity_keywords=["checked power", "checked contrast potentiometer"],
+        expected_recall_facts=["checked power", "checked contrast potentiometer"],
+        forbidden_errors=["replaced lcd", "rewired board", "checked code upload"],
+    ),
+    _memory_case(
+        case_id="memory_world_state_evolution_food",
+        description="Tests whether the system tracks sequential state changes exactly.",
+        turns=[
+            "City A has 100 food. City B has 60 food. City C has 40 food.",
+            "Move 20 food from City A to City C.",
+            "A storm destroys 15 food in City C.",
+            "What are the final food totals?",
+        ],
+        expected_keywords=["city a 80", "city b 60", "city c 45"],
+        memory_fidelity_keywords=["City A 80", "City B 60", "City C 45"],
+        expected_recall_facts=["City A 80", "City B 60", "City C 45"],
+        forbidden_errors=["City A 100", "City C 60", "City C 55"],
+    ),
+    _memory_case(
+        case_id="memory_original_vs_current_status",
+        description="Tests whether the system can distinguish original state from current state after an update.",
+        turns=[
+            "At the start of the sprint, auth was blocked and UI was in progress.",
+            "Update: auth is now unblocked.",
+            "What is the current status of auth, and what was its original status?",
+        ],
+        expected_keywords=["current", "unblocked", "original", "blocked"],
+        memory_fidelity_keywords=["auth current unblocked", "auth original blocked"],
+        expected_recall_facts=["auth current unblocked", "auth original blocked"],
+        corrected_facts=["auth changed from blocked to unblocked"],
+        forbidden_errors=["auth original unblocked", "auth current blocked"],
+    ),
+    _memory_case(
+        case_id="memory_recall_prior_planning_request",
+        description="Tests whether the system recalls the actual earlier request rather than paraphrasing generically.",
+        turns=[
+            "Help me plan a 3-day meal plan with cheap, high-protein lunches.",
+            "Also make dinners flexible.",
+            "What kind of meal plan did I ask you to help me plan?",
+        ],
+        expected_keywords=["3-day meal plan", "cheap", "high-protein lunches", "flexible dinners"],
+        memory_fidelity_keywords=["3-day meal plan", "cheap high-protein lunches", "flexible dinners"],
+        expected_recall_facts=["3-day meal plan", "cheap high-protein lunches", "flexible dinners"],
+        forbidden_errors=["7-day plan", "breakfast focus", "vegetarian only"],
+    ),
+    _memory_case(
+        case_id="memory_correction_chain_latest_wins",
+        description="Tests whether the system follows the latest correction in a chain of changes.",
+        turns=[
+            "My meeting is on Friday at 3 PM.",
+            "Sorry, move that to Thursday at 1 PM.",
+            "Actually, final update: it's Friday at 11 AM.",
+            "When is my meeting?",
+        ],
+        expected_keywords=["Friday", "11 AM"],
+        memory_fidelity_keywords=["meeting Friday at 11 AM"],
+        expected_recall_facts=["meeting Friday at 11 AM"],
+        corrected_facts=[
+            "meeting changed from Friday 3 PM to Thursday 1 PM",
+            "meeting changed from Thursday 1 PM to Friday 11 AM",
+        ],
+        forbidden_errors=["Friday at 3 PM", "Thursday at 1 PM"],
+    ),
+]
+
+
+ADDITIONAL_PLANNING_CASES: List[Dict[str, object]] = [
+    _planning_case(
+        case_id="planning_schedule_exam_blocks",
+        description="Build a study schedule with hard timing and break constraints.",
+        turns=[
+            "Plan my study evening from 6 PM to 9 PM. I need 90 minutes of math, 45 minutes of history, and a 15 minute break every hour. I also have a tutoring call from 7:15 PM to 7:45 PM.",
+        ],
+        expected_keywords=["math", "history", "break", "7:15", "7:45"],
+        constraint_keywords=["break every hour", "tutoring call", "6 pm", "9 pm"],
+        forbidden_errors=["study through 7:15 to 7:45", "no break"],
+    ),
+    _planning_case(
+        case_id="planning_schedule_conflict_exists",
+        description="Recognize when hard scheduling constraints conflict.",
+        turns=[
+            "Make a study plan from 8 PM to 9 PM with 45 minutes of biology, 30 minutes of chemistry, and a 20 minute break. I also cannot study after 9 PM. Tell me if this does not fit.",
+        ],
+        expected_keywords=["does not fit", "conflict", "biology", "chemistry"],
+        constraint_keywords=["8 pm", "9 pm", "20 minute break"],
+        forbidden_errors=["pretend everything fits"],
+    ),
+    _planning_case(
+        case_id="planning_prerequisite_bugfixing",
+        description="Sequence engineering tasks with clear prerequisites.",
+        turns=[
+            "Plan my bugfixing work. I must reproduce the bug before changing code, I must update tests before merging, and deployment can only happen after review passes.",
+        ],
+        expected_keywords=["reproduce", "code", "tests", "review", "deploy"],
+        constraint_keywords=["before changing code", "before merging", "after review"],
+        forbidden_errors=["deploy before review", "merge before tests"],
+    ),
+    _planning_case(
+        case_id="planning_resource_allocation_moving",
+        description="Plan a moving task with limited helpers and heavy-item constraints.",
+        turns=[
+            "Plan my moving day. I have 2 helpers, 12 boxes, one car trip in the morning and one at noon. The desk requires both helpers together, fragile boxes must go in the first trip, and cleaning happens only after all boxes are out.",
+        ],
+        expected_keywords=["desk", "fragile", "first trip", "cleaning"],
+        constraint_keywords=["both helpers", "first trip", "after all boxes are out"],
+        forbidden_errors=["clean before boxes are out", "move desk alone"],
+    ),
+    _planning_case(
+        case_id="planning_troubleshoot_wifi_branch",
+        description="Create a constrained troubleshooting plan after some steps were already tried.",
+        turns=[
+            "My home Wi-Fi is down. I already restarted the router and checked the modem lights. I have not tested another device yet. Plan the next troubleshooting steps without repeating what I already did.",
+        ],
+        expected_keywords=["another device", "router", "modem", "next"],
+        constraint_keywords=["without repeating", "already restarted", "already checked"],
+        forbidden_errors=["restart the router", "check modem lights"],
+        expected_next_step_patterns=["test another device"],
+    ),
+    _planning_case(
+        case_id="planning_blocked_release_recovery",
+        description="Recover a release plan after a blocking dependency appears.",
+        turns=[
+            "Our release plan was: finish QA, tag the build, then publish release notes. New issue: QA is blocked because the staging database migration failed. What should the revised plan be?",
+        ],
+        expected_keywords=["migration", "qa", "tag", "release notes", "revised"],
+        constraint_keywords=["qa blocked", "migration failed", "tag after qa"],
+        forbidden_errors=["tag the build before QA is unblocked"],
+    ),
+    _planning_case(
+        case_id="planning_study_week_with_job",
+        description="Plan study sessions around work and rest constraints.",
+        turns=[
+            "Plan my study week. I work Monday to Friday from 9 AM to 5 PM, need 6 hours of study total, cannot study more than 2 hours in a day, and want Sunday completely off.",
+        ],
+        expected_keywords=["6 hours", "2 hours", "sunday", "study"],
+        constraint_keywords=["monday to friday 9 to 5", "no more than 2 hours", "sunday off"],
+        forbidden_errors=["study on sunday", "more than 2 hours in a day"],
+    ),
+    _planning_case(
+        case_id="planning_packing_for_trip",
+        description="Packing plan with weight, access, and weather constraints.",
+        turns=[
+            "Plan my packing for a one-night trip. I only have a carry-on, the bag must stay under 7 kilograms, rain gear must be easy to reach, and my presentation clothes cannot be wrinkled.",
+        ],
+        expected_keywords=["carry-on", "under 7", "rain gear", "easy to reach", "presentation clothes"],
+        constraint_keywords=["under 7 kilograms", "easy to reach", "cannot be wrinkled"],
+        forbidden_errors=["bury rain gear", "wrinkle presentation clothes"],
+    ),
+    _planning_case(
+        case_id="planning_diagnostic_branching_printer",
+        description="Simple diagnostic branching with already-known conditions.",
+        turns=[
+            "My printer is not printing. The printer has power, paper is loaded, and the document is stuck in the queue. Give me the best next troubleshooting path.",
+        ],
+        expected_keywords=["queue", "clear", "retry", "printer"],
+        constraint_keywords=["has power", "paper is loaded", "stuck in the queue"],
+        expected_next_step_patterns=["clear the queue", "retry"],
+    ),
+    _planning_case(
+        case_id="planning_revision_after_new_constraint",
+        description="Revise a plan after one key variable changes.",
+        turns=[
+            "Plan my Saturday errands in this order: grocery store, pharmacy, post office, then laundry.",
+            "Update: the pharmacy closes in 30 minutes, so revise the plan.",
+        ],
+        expected_keywords=["pharmacy", "revise", "first", "errands"],
+        constraint_keywords=["pharmacy closes in 30 minutes"],
+        forbidden_errors=["keep pharmacy late in the plan"],
+    ),
+    _planning_case(
+        case_id="planning_best_next_step_from_progress",
+        description="Choose the best next step from explicit progress state.",
+        turns=[
+            "For my website launch, the landing page copy is done, screenshots are missing, QA is not started, and deployment is blocked until QA finishes. What is the best next step?",
+        ],
+        expected_keywords=["screenshots", "qa", "deployment", "next step"],
+        constraint_keywords=["deployment blocked until qa", "qa not started"],
+        forbidden_errors=["deploy now"],
+        expected_next_step_patterns=["finish screenshots", "start qa"],
+    ),
+]
+
+
+PROOF_OF_CONCEPT_CASES: List[Dict[str, object]] = [
+    _memory_case(
+        case_id="poc_memory_instruction_update",
+        description="Proof-of-concept recall where the latest instruction overrides the earlier one.",
+        turns=[
+            "For the demo script, start by introducing BrAIn as a memory-first reasoning prototype.",
+            "Update the demo script: start with the benchmark result first, then explain the memory-first design.",
+            "What did I say the demo script should start with now?",
+        ],
+        expected_keywords=["benchmark result", "memory-first"],
+        memory_fidelity_keywords=["benchmark result first", "memory-first design"],
+        expected_recall_facts=["benchmark result first", "memory-first design"],
+        corrected_facts=["demo script start changed to benchmark result first"],
+        forbidden_errors=["introducing BrAIn as a memory-first reasoning prototype"],
+    ),
+    _memory_case(
+        case_id="poc_memory_inventory_sequence",
+        description="Proof-of-concept evolving launch-kit state after multiple updates.",
+        turns=[
+            "The launch kit is on the garage shelf, and the spare batteries are in the desk drawer.",
+            "Move the launch kit to the car trunk.",
+            "Then put the spare batteries in the launch kit side pouch.",
+            "What is the latest launch kit state I gave you?",
+        ],
+        expected_keywords=["car trunk", "side pouch", "spare batteries"],
+        memory_fidelity_keywords=["launch kit car trunk", "spare batteries side pouch"],
+        expected_recall_facts=["launch kit car trunk", "spare batteries side pouch"],
+        corrected_facts=["launch kit moved from garage shelf to car trunk", "spare batteries moved from desk drawer to side pouch"],
+        forbidden_errors=["garage shelf", "desk drawer"],
+    ),
+    _planning_case(
+        case_id="poc_planning_constrained_demo_day",
+        description="Proof-of-concept planning with hard ordering, time, and prerequisite constraints.",
+        turns=[
+            "Plan my demo day. I have 30 minutes to test the app, 20 minutes to write release notes, and 15 minutes to record a short clip. The clip can only be recorded after the app test passes, and release notes must be done before I publish.",
+        ],
+        expected_keywords=["test", "release notes", "record", "publish"],
+        constraint_keywords=["30 minutes", "20 minutes", "15 minutes", "after the app test passes", "before I publish"],
+        required_constraints=["clip after app test", "release notes before publish"],
+        forbidden_errors=["record before the app test", "publish before release notes"],
+        expected_next_step_patterns=["test the app", "release notes", "record"],
+    ),
+    _planning_case(
+        case_id="poc_hybrid_memory_plan_revision",
+        description="Proof-of-concept hybrid task that should use remembered constraints to revise a plan.",
+        turns=[
+            "For the GitHub upload, remember that I want a clean repository with no generated benchmark state.",
+            "Also remember that I want to keep proof-of-concept documentation.",
+            "Now make the next upload plan using those constraints.",
+        ],
+        expected_keywords=["clean repository", "generated", "proof-of-concept", "documentation"],
+        constraint_keywords=["no generated benchmark state", "keep proof-of-concept documentation"],
+        required_constraints=["no generated benchmark state", "proof-of-concept documentation"],
+        forbidden_errors=["commit generated benchmark state", "delete proof-of-concept documentation"],
+        expected_next_step_patterns=["keep documentation", "exclude generated"],
+    ),
+]
+
+
+TEST_PROMPTS: List[Dict[str, object]] = (
+    CORE_CASES + ADDITIONAL_MEMORY_CASES + ADDITIONAL_PLANNING_CASES + PROOF_OF_CONCEPT_CASES
+)

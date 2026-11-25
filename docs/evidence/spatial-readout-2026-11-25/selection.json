@@ -1,0 +1,13 @@
+{
+  "alpha": 0.001,
+  "correct_cells": 1022,
+  "correct_images": 62,
+  "id": "concat4-0.001",
+  "images": 64,
+  "model_bytes": 6554860,
+  "model_sha256": "78e49a70515c4cce3a2b6f907769c9e6c70392b79769d27452c3a7bef237506e",
+  "plan_sha256": "1eff54882af82c8c462a791f5f08e1e558e43adf8fc9a845d0f18b1efad4ebec",
+  "representation": "concat4",
+  "total_cells": 1024,
+  "width": 10240
+}

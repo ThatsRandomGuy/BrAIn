@@ -1,0 +1,72 @@
+{
+  "encoder": {
+    "config_unchanged": true,
+    "exit_code": 0,
+    "started": true,
+    "stopped": true
+  },
+  "overhead": {
+    "baseline_decoder_bytes": 1639660,
+    "checksum_bytes": 8,
+    "manifest_bytes": 133,
+    "source_payload_bytes": 4,
+    "spatial_decoder_bytes": 6554860,
+    "vision_positions_per_image": 49
+  },
+  "paired": {
+    "accuracy_delta": -0.015625,
+    "both_correct": 480,
+    "both_wrong": 14,
+    "improved_images": 5,
+    "mcnemar_exact_two_sided_p": 0.09625244140625,
+    "regressed_images": 13
+  },
+  "plan_sha256": "1eff54882af82c8c462a791f5f08e1e558e43adf8fc9a845d0f18b1efad4ebec",
+  "primary_gate_passed": false,
+  "raw": {
+    "baseline": {
+      "correct_cells": 8171,
+      "correct_images": 493,
+      "images": 512,
+      "total_cells": 8192
+    },
+    "spatial": {
+      "correct_cells": 8160,
+      "correct_images": 485,
+      "images": 512,
+      "total_cells": 8192
+    }
+  },
+  "recovery": {
+    "baseline": {
+      "accepted": 511,
+      "candidate_checks": 21432,
+      "correct": 511,
+      "recovered": 18,
+      "unavailable": 1,
+      "wrong_accepted": 0
+    },
+    "spatial": {
+      "accepted": 511,
+      "candidate_checks": 30456,
+      "correct": 511,
+      "recovered": 26,
+      "unavailable": 1,
+      "wrong_accepted": 0
+    }
+  },
+  "scope": "No production model replacement,language-model inference,context-saving or smaller-model claim.",
+  "selection": {
+    "alpha": 0.001,
+    "correct_cells": 1022,
+    "correct_images": 62,
+    "id": "concat4-0.001",
+    "images": 64,
+    "model_bytes": 6554860,
+    "model_sha256": "78e49a70515c4cce3a2b6f907769c9e6c70392b79769d27452c3a7bef237506e",
+    "plan_sha256": "1eff54882af82c8c462a791f5f08e1e558e43adf8fc9a845d0f18b1efad4ebec",
+    "representation": "concat4",
+    "total_cells": 1024,
+    "width": 10240
+  }
+}

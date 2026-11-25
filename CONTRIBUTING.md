@@ -25,3 +25,11 @@ Keep workstation paths, credentials, model weights, feature dumps and runtime
 state out of commits. Small documented synthetic fixtures are intentional
 exceptions. The current package lives in `brain_pixels/`; the older application
 and historical benchmark drivers remain separate under `core/` and `research/`.
+
+## Pull requests
+
+Use a feature branch and open a pull request for subsequent changes. Leave main
+and the default readout stable until the change is reviewed. A research PR
+should include its frozen protocol, result summary, costs, failures and exact
+validation commands. An exploratory readout is not promoted into the production
+journal merely because it performs well on one test.

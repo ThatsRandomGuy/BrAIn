@@ -1,0 +1,25 @@
+{
+  "note": "The frozen runtime hashes are byte hashes from Windows. Git publishes LF-normalized source;both fingerprints are provided. Source semantics were not changed after the protocol froze.",
+  "files": [
+    {
+      "path": "brain_pixels/spatial_readout.py",
+      "runtime_sha256": "35048c29c054e14b749fc8c6f2e07996894c2ebbd861459eb4b48cf61f3baa68",
+      "normalized_lf_sha256": "35048c29c054e14b749fc8c6f2e07996894c2ebbd861459eb4b48cf61f3baa68"
+    },
+    {
+      "path": "research/run_spatial_readout.py",
+      "runtime_sha256": "d8a8865ac763fc1d01aab377ae8c657803c8e97637e203fd9b612c98e8fe0f2c",
+      "normalized_lf_sha256": "26858c5dcc18b8b59bbb71581b7c444efd001ed57e7efd34072c026ab1399108"
+    },
+    {
+      "path": "research/audit_spatial_readout.py",
+      "runtime_sha256": "a7d958604cce2cdfeaca672640e88b5d368e66cc514dcb16f8478d1f478f4054",
+      "normalized_lf_sha256": "016c1c5748ba56588efdd90b2b4f6d9930c60081684c1276d90497897b545ae1"
+    },
+    {
+      "path": "tests/test_spatial_readout.py",
+      "runtime_sha256": "520e7250b5da36e09286eb76295a98ae749fac27eeff7c20b209ec03e84166c9",
+      "normalized_lf_sha256": "520e7250b5da36e09286eb76295a98ae749fac27eeff7c20b209ec03e84166c9"
+    }
+  ]
+}

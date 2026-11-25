@@ -1,0 +1,1 @@
+{"decoder_spec":{"alpha":0.001,"id":"ridge_overlap_0.001","method":"ridge","representation":"overlap"},"encoding":"four-color-row-major-2bit-v1","feature_tokens":49,"feature_width":2560,"grid":[4,4],"image_size":[224,224],"model_sha256":"1d09569fd12bd8cd7f4d04daa20abe0b2cda17c10140c802e5ad8e15fb00079e","palette":[[230,25,25],[20,170,65],[25,80,230],[245,210,20]],"version":1}

@@ -1,0 +1,11 @@
+{
+  "exe_sha256": "e766ac7362a4892e2bd34f9348fb4b3dbbfef5558be9aea83c5ab7871bcbf84e",
+  "mmproj_sha256": "b1a82259702816a5330d7bd7607cd9676b11780e79ff7348c21103ff3ce49bd0",
+  "config_sha256": "0bf4fecd27123f0c1b3586cbf49b37094625a43291f3965e64af743e0dbc14af",
+  "scope": "Frozen BrAIn external ridge readout,not redistributed Strata/Qwen weights.",
+  "training_run": "pixel-learning-curve-20261104-122931-1042904c",
+  "training_images": 512,
+  "selection": "Primary overlap ridge0.001 selected on validation;secondary center model not promoted from test results.",
+  "feature_profile": "49 projected positions,2560 values per position,224-square four-color grid",
+  "model_sha256": "1d09569fd12bd8cd7f4d04daa20abe0b2cda17c10140c802e5ad8e15fb00079e"
+}

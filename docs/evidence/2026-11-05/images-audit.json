@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "images": 512,
+  "independent_integer_candidates": true,
+  "all_fault_conditions_replayed": true,
+  "full_gate": true,
+  "compact64_gate": true,
+  "encoder_stopped": true
+}

@@ -1,141 +1,134 @@
 # BrAIn
 
-BrAIn is an experimental reasoning and memory prototype that tests whether a
-structured cognitive layer can improve reliability over a plain LLM baseline.
+[![Tests](https://github.com/ThatsRandomGuy/BrAIn/actions/workflows/tests.yml/badge.svg)](https://github.com/ThatsRandomGuy/BrAIn/actions/workflows/tests.yml)
 
-Instead of treating every prompt as a single text-completion problem, BrAIn
-routes the request, retrieves and reconstructs relevant memory, evaluates
-knowledge through a reasoning graph, simulates/plans when needed, and then
-translates the internal structure into a concise user-facing answer.
+**Inspectable research into image-backed memory for small language models.**
 
-The goal is not to wrap an LLM with more prompting. The goal is to keep BrAIn's
-internal state inspectable and deterministic where possible, while still using a
-local model such as `qwen3:8b` for plain-language generation or baseline
-comparison.
+BrAIn asks whether facts and context can be represented visually, retained across
+sessions, and recovered reliably enough to help smaller AI models. The current
+prototype turns bounded fact records into color grids, reads their projected
+vision features with a learned decoder, and verifies the result before using it.
 
-## Current Findings
+**Working today:** persisted memory, explicit corrections and uncertainty,
+learned four-color readout, bounded error recovery, provenance, and conservative
+recall. **Still unproven:** better language-model answers or lower context cost
+than a strong text representation.
 
-The latest proof run extends the benchmark suite to 50 prompts and compares
-BrAIn against a plain Ollama `qwen3:8b` baseline.
+<img src="docs/memory-example.png" width="224" height="224" alt="Actual color-encoded memory record" />
 
-- Total cases: 50
-- Eligible comparisons: 43
-- BrAIn wins: 23
-- Plain Qwen wins: 13
-- Ties: 7
-- Average comparison score: BrAIn 0.6827, plain Qwen 0.6493
-- Memory recall: BrAIn 18 wins, Qwen 5 wins, 3 ties
+*A real experiment record: “The canopy detector is in the violet shipping crate.”*
+The meaning comes from an explicit [codebook and record](docs/memory-example.json).
+This is a constructed memory encoding, not an image of an AI's internal thoughts.
 
-The strongest result so far is memory recall. BrAIn's structured memory,
-latest-state handling, and reconstruction layer outperform the plain LLM on
-tasks like preference updates, current location/state recall, merged
-constraints, and prior planning requests.
+## Try it in a minute
 
-The main remaining weakness is open-ended planning response quality. BrAIn's
-internal planner is structured, but the final answer can still be too compressed
-or conservative compared with a fluent LLM answer. That makes the response layer
-and planning-to-action translation the next improvement area.
+Python 3.11 or newer. The first demo uses only the standard library, needs no
+model server, and downloads nothing:
 
-The detailed proof summary is in `BRAIN_50_PROMPT_PROOF.md`.
-
-## How It Works
-
-At a high level, BrAIn runs a prompt through these layers:
-
-1. `brain_query_router.py` classifies the prompt as factual, memory, planning,
-   goal, transform, hybrid, or state update.
-2. `brain_hybrid_prototype.py` coordinates memory retrieval, state merging,
-   planning, clarification handling, and final response preparation.
-3. `brain_reasoning_graph.py` evaluates candidate knowledge through graph,
-   cluster, path, activation, spatial, temporal, and concept-memory structures.
-4. `llm_interface.py` separates internal decisions from user-facing responses,
-   suppresses meta-language, and can use deterministic or Ollama-backed output.
-5. `brain_vs_llm_runner.py` and `plain_llm_rebaseline.py` run side-by-side
-   comparisons against a plain LLM baseline.
-
-## What Is Included
-
-- `brain_hybrid_prototype.py` - main hybrid reasoning pipeline.
-- `brain_reasoning_graph.py` - reasoning graph, cluster, path, activation, and spatial reasoning layer.
-- `llm_interface.py` - deterministic/LLM response interface and final response layer.
-- `interactive_brain_shell.py` - terminal shell for manual experiments.
-- `brain_vs_llm_runner.py` - benchmark harness for BrAIn vs a plain LLM baseline.
-- `plain_llm_rebaseline.py` - raw Ollama baseline runner for plain `qwen3:8b` comparisons.
-- `tests/test_reasoning_graph_layer.py` - deterministic regression tests for core graph and response behavior.
-
-Additional design notes live in:
-
-- `BRAIN_50_PROMPT_PROOF.md`
-- `BRAIN_CONTEXT.md`
-- `BRAIN_ARCHITECTURE_AUDIT.md`
-- `BRAIN_VALIDATION_LEDGER.md`
-- `README_BRAIN_VS_LLM.md`
-- `TERMINAL_PROTOTYPE_USAGE.md`
-
-## Requirements
-
-This project currently uses the Python standard library for the checked-in test
-path. Live LLM benchmarking can use Ollama if it is available locally.
-
-The latest benchmark work used `qwen3:8b` through Ollama, but the deterministic
-tests do not require a live model.
-
-Optional live benchmark setup:
-
-```bash
-ollama pull qwen3:8b
+```sh
+git clone https://github.com/ThatsRandomGuy/BrAIn.git
+cd BrAIn
+python -m brain_pixels demo --output artifacts/first-demo
 ```
 
-## Run The Tests
+It renders a memory image, demonstrates two-cell checksum recovery, and recalls:
 
-```bash
-python -B -m unittest tests.test_reasoning_graph_layer
+```text
+SET location       -> blue equipment locker
+MAYBE new location -> UNKNOWN
+SET new location   -> padded transport crate
 ```
 
-## Run The Interactive Shell
+This is a **model-free protocol demo**. To exercise the learned visual decoder
+on a real recorded native feature export:
 
-```bash
-python interactive_brain_shell.py
+```sh
+python -m pip install -e ".[vision]"
+python -m brain_pixels replay --features tests/fixtures/two-cell.sve --manifest tests/fixtures/two-cell.manifest.json --policy two-cell
 ```
 
-Useful shell flags:
+That fixture has two actual misread cells; the frozen decoder plus bounded
+recovery returns `accepted`. The preserved `unavailable` fixture demonstrates a
+three-cell error that the same policy cannot repair. Neither replay loads a
+language model or reads a source PNG to find the answer.
 
-```bash
-python interactive_brain_shell.py --debug --raw
-python interactive_brain_shell.py --storage-mode store_final_results_only
+[Quick start and live encoder setup](docs/quickstart.md) ·
+[Architecture](docs/architecture.md) · [Results](docs/results.md) ·
+[Roadmap](docs/roadmap.md)
+
+## Measured results
+
+The November 5, 2026 pass froze its decoder, source patterns, policies and
+primary 64-bit checksum choice before inference. It evaluated **928 fresh
+images**, including six typed histories up to 128 records, and **810
+fresh-process memory queries**.
+
+| Recorded experiment | Verification only | One-cell recovery | Two-cell recovery |
+|---|---:|---:|---:|
+| Correct complete images, uniform grids | 493/512 | 510/512 | 511/512 |
+| Known facts recalled, typed histories | 25/52 | 52/52 | 52/52 |
+
+The 64-bit compact policy matched full two-cell recovery on this sample. The text
+control answered 52/52 known-fact queries correctly. All 270 pending/missing-update
+probes withheld answers safely. There were no incorrect accepted answers in the
+primary conditions. All ten raw errors in the typed-history sample were
+single-cell errors, so that sample does **not** show an additional semantic gain
+from two-cell recovery.
+
+Failures are part of the result: one uniform image remained unreadable, and a
+16-bit checksum control falsely accepted 36 injected three-cell corruptions.
+The compact envelope shrank from 181 to 132 bytes, but it still exceeds the
+four-byte payload. Retained visual journals were about 223 MB versus 4.6 MB for
+the matched text control, including cached features and metadata. Each image
+still occupies 49 projected vision positions. **This is not evidence of context
+compression or a storage advantage.**
+
+[Evidence, limitations and reproduction levels](docs/results.md)
+
+## Engineering focus
+
+- **Never silently reuse stale memory.** Any missing, pending or unrecoverable
+  active record makes the entire evidence bundle unavailable.
+- **Keep meaning explicit.** SET, MAYBE and FORGET operate on typed location and
+  owner slots; a versioned vocabulary maps IDs to names and aliases.
+- **Separate accuracy from repair.** Receipts label recovered cells and search
+  cost. Two-cell recovery examines at most 1,128 alternatives.
+- **Make state inspectable.** Immutable revisions, atomic HEAD updates, source
+  citations and saved readout policies survive process restarts.
+- **Compare against text.** Identical packets and memory semantics prevent
+  generic coding gains from being mislabeled as pixel-specific gains.
+
+## Repository map
+
+```text
+brain_pixels/        Current portable codec, readout, recovery and journal CLI
+  assets/            Frozen learned readout and versioned profile; no LLM weights
+tests/               Current pixel-memory contracts and genuine readout fixtures
+core/                Maintained structured-memory/reasoning prototype
+  tests/             Core regressions, including the original graph tests
+research/legacy/     Historical benchmark and example scripts
+docs/                Architecture, methods, results and compact evidence
+tools/               One-command checks and offline evidence verification
 ```
 
-## Run The Benchmark Harness
+The older 50-prompt structured-reasoning report remains under
+[docs/legacy](docs/legacy/README.md). It is historical development evidence,
+not proof of the pixel hypothesis. The original graph tests remain active;
+superseded prototype compatibility checks and machine-bound sweep tests are not
+part of the new public suite. [Cleanup rationale](docs/testing.md).
 
-Fast deterministic BrAIn-side proof run:
+## Develop
 
-```bash
-python -B brain_vs_llm_runner.py --provider deterministic --allow-nonlive-provider --no-bootstrap-reasoning --output brain_output/stress_qwen3_8b_50_brain_structured.json --no-print
+```sh
+python -m pip install -e ".[vision,dev]"
+python tools/run_checks.py
+python tools/verify_evidence.py
+python -m ruff check brain_pixels tests tools
+python -m ruff format --check brain_pixels tests tools
 ```
 
-Raw plain-Qwen rebaseline:
+CI runs the current pixel suite and all maintained core regressions on Windows
+and Linux. The evidence verifier replays recorded predictions and query
+aggregates; it does not pretend to rerun the original native inference.
 
-```bash
-python -B plain_llm_rebaseline.py --input brain_output/stress_qwen3_8b_50_brain_structured.json --output brain_output/stress_qwen3_8b_50_plain_rebaseline.json --report brain_output/stress_qwen3_8b_50_plain_rebaseline.md --model qwen3:8b
-```
-
-Live side-by-side runner:
-
-```bash
-python brain_vs_llm_runner.py --provider ollama
-```
-
-For a quick smoke run:
-
-```bash
-python brain_vs_llm_runner.py --provider ollama --case-limit 3
-```
-
-Generated output is written under `brain_output/`, which is intentionally ignored
-by Git.
-
-## Repository Hygiene
-
-Generated benchmark output, runtime state, Python bytecode, local editor/agent
-settings, and temporary probe state are ignored through `.gitignore` so the
-repository stays focused on source, tests, and documentation.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for experiment and change guidelines.

@@ -1,0 +1,24 @@
+{
+  "seed": 2026110503,
+  "images": 512,
+  "primary_compact_bits": 64,
+  "radii": [
+    0,
+    1,
+    2
+  ],
+  "max_candidates": 1128,
+  "faults": "First4 sources;all1128 one/two-cell perturbations;all560 three-position combinations with deterministic changed colors. Separate protocol tests,not new accuracy samples.",
+  "gates": {
+    "full": "zero wrong accepted;all in-radius positives exact;all out-of-radius controls withheld;coverage>=99%;strictly higher than one-cell if fresh two-cell errors occur",
+    "compact64": "same coverage as full on fresh model reads;zero wrong accepted in fresh and fault controls"
+  },
+  "secondary_bits": [
+    16,
+    24,
+    32,
+    64,
+    256
+  ],
+  "scope": "Symbol readout plus checksum redundancy;no LLM inference/context or storage advantage. No selected bit width based on test results."
+}

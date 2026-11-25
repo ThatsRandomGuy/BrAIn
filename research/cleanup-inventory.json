@@ -1,0 +1,44 @@
+{
+  "retained_core_tests": [
+    "test_context_routing_updates.py",
+    "test_pixel_codec.py",
+    "test_pixel_memory_layer.py",
+    "test_reasoning_graph_layer.py",
+    "test_relation_foundations.py",
+    "test_relation_memory.py",
+    "test_semantic_memory.py",
+    "test_spatial_pixel_store.py"
+  ],
+  "current_pixel_tests": [
+    "test_cli.py",
+    "test_encoder.py",
+    "test_journal.py",
+    "test_memory_contract.py",
+    "test_readout.py",
+    "test_recovery.py"
+  ],
+  "historical_benchmarks": [
+    "brain_adaptive_pattern_benchmark.py",
+    "brain_assisted_pipeline_benchmark.py",
+    "brain_benchmark.py",
+    "brain_concept_abstraction_v2_benchmark.py",
+    "brain_generative_expansion_v35_benchmark.py",
+    "brain_goal_reward_v5_benchmark.py",
+    "brain_goal_tracking_examples.py",
+    "brain_hybrid_prototype_examples.py",
+    "brain_interactive_reasoning_examples.py",
+    "brain_query_router_examples.py",
+    "brain_reality_grounding_v4_benchmark.py",
+    "brain_reasoning_benchmark.py",
+    "brain_reasoning_engine_v1_benchmark.py",
+    "brain_route_execution_examples.py",
+    "brain_strategy_generation_examples.py",
+    "brain_vs_llm_runner.py",
+    "pixel_memory_probe.py",
+    "plain_llm_rebaseline.py",
+    "reasoning_graph_probe.py"
+  ],
+  "excluded_local_tests": "Machine-specific sweep harnesses and duplicate prototype generations remain in the untouched local research archive;they are not part of the public active suite.",
+  "full_local_evidence_preserved": true,
+  "removed_compatibility_contract": "test_legacy_one_cell_equivalence replaced by direct48-fault behavior test;old module dependency not carried forward"
+}

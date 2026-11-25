@@ -1,0 +1,5 @@
+{
+  "exe": "path/to/strata-vision",
+  "mmproj": "path/to/matching-projector.gguf",
+  "model": "path/to/matching-model-first-shard.gguf"
+}

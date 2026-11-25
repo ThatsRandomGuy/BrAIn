@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brain-pixel-memory"
+version = "0.2.0"
+description = "Inspectable experiments in image-backed memory, bounded visual readout, and conservative recall"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name = "Jacob Englund"}]
+keywords = ["ai", "memory", "computer-vision", "research", "error-correction"]
+
+[project.optional-dependencies]
+vision = ["numpy>=1.26,<3"]
+dev = ["ruff>=0.8,<1"]
+
+[project.scripts]
+brain-pixels = "brain_pixels.cli:main"
+
+[project.urls]
+Repository = "https://github.com/ThatsRandomGuy/BrAIn"
+Issues = "https://github.com/ThatsRandomGuy/BrAIn/issues"
+
+[tool.setuptools.packages.find]
+include = ["brain_pixels*"]
+
+[tool.setuptools.package-data]
+brain_pixels = ["assets/*.json", "assets/*.npz"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

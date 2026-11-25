@@ -1,0 +1,241 @@
+{
+  "passed": true,
+  "fresh_frames": 416,
+  "fresh_process_queries": 810,
+  "source_seed_and_exclusion_replayed": true,
+  "independent_candidate_replay": true,
+  "semantic_contexts_replayed": true,
+  "summary": {
+    "conditions": {
+      "verify": {
+        "queries": 108,
+        "known_queries": 52,
+        "known_correct": 25,
+        "available_queries": 72,
+        "correct_answers": 81,
+        "wrong_assertions": 0,
+        "safety_probes": 54,
+        "safety_passed": 54
+      },
+      "recovery": {
+        "queries": 108,
+        "known_queries": 52,
+        "known_correct": 52,
+        "available_queries": 108,
+        "correct_answers": 108,
+        "wrong_assertions": 0,
+        "safety_probes": 54,
+        "safety_passed": 54
+      },
+      "two": {
+        "queries": 108,
+        "known_queries": 52,
+        "known_correct": 52,
+        "available_queries": 108,
+        "correct_answers": 108,
+        "wrong_assertions": 0,
+        "safety_probes": 54,
+        "safety_passed": 54
+      },
+      "compact64": {
+        "queries": 108,
+        "known_queries": 52,
+        "known_correct": 52,
+        "available_queries": 108,
+        "correct_answers": 108,
+        "wrong_assertions": 0,
+        "safety_probes": 54,
+        "safety_passed": 54
+      },
+      "text": {
+        "queries": 108,
+        "known_queries": 52,
+        "known_correct": 52,
+        "available_queries": 108,
+        "correct_answers": 108,
+        "wrong_assertions": 0,
+        "safety_probes": 54,
+        "safety_passed": 54
+      }
+    },
+    "by_history_depth": [
+      {
+        "condition": "verify",
+        "depth": 1,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "verify",
+        "depth": 16,
+        "journals": 6,
+        "available_journals": 5,
+        "queries": 36,
+        "correct_answers": 31
+      },
+      {
+        "condition": "verify",
+        "depth": 64,
+        "journals": 4,
+        "available_journals": 1,
+        "queries": 24,
+        "correct_answers": 11
+      },
+      {
+        "condition": "verify",
+        "depth": 128,
+        "journals": 2,
+        "available_journals": 0,
+        "queries": 12,
+        "correct_answers": 3
+      },
+      {
+        "condition": "recovery",
+        "depth": 1,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "recovery",
+        "depth": 16,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "recovery",
+        "depth": 64,
+        "journals": 4,
+        "available_journals": 4,
+        "queries": 24,
+        "correct_answers": 24
+      },
+      {
+        "condition": "recovery",
+        "depth": 128,
+        "journals": 2,
+        "available_journals": 2,
+        "queries": 12,
+        "correct_answers": 12
+      },
+      {
+        "condition": "two",
+        "depth": 1,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "two",
+        "depth": 16,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "two",
+        "depth": 64,
+        "journals": 4,
+        "available_journals": 4,
+        "queries": 24,
+        "correct_answers": 24
+      },
+      {
+        "condition": "two",
+        "depth": 128,
+        "journals": 2,
+        "available_journals": 2,
+        "queries": 12,
+        "correct_answers": 12
+      },
+      {
+        "condition": "compact64",
+        "depth": 1,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "compact64",
+        "depth": 16,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "compact64",
+        "depth": 64,
+        "journals": 4,
+        "available_journals": 4,
+        "queries": 24,
+        "correct_answers": 24
+      },
+      {
+        "condition": "compact64",
+        "depth": 128,
+        "journals": 2,
+        "available_journals": 2,
+        "queries": 12,
+        "correct_answers": 12
+      },
+      {
+        "condition": "text",
+        "depth": 1,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "text",
+        "depth": 16,
+        "journals": 6,
+        "available_journals": 6,
+        "queries": 36,
+        "correct_answers": 36
+      },
+      {
+        "condition": "text",
+        "depth": 64,
+        "journals": 4,
+        "available_journals": 4,
+        "queries": 24,
+        "correct_answers": 24
+      },
+      {
+        "condition": "text",
+        "depth": 128,
+        "journals": 2,
+        "available_journals": 2,
+        "queries": 12,
+        "correct_answers": 12
+      }
+    ],
+    "frames": 416,
+    "raw_correct_frames": 406,
+    "recovered_frames": 10,
+    "accepted_recovery_frames": 416,
+    "wrong_accepted_frames": 0,
+    "fresh_process_queries": 810,
+    "safety_gate": true,
+    "scope": "Typed software semantic replay;no language-model inference/context or storage gain established.",
+    "one_cell_utility_gate": true,
+    "available_context_mismatches": {
+      "verify": 0,
+      "recovery": 0,
+      "two": 0,
+      "compact64": 0,
+      "text": 0
+    }
+  },
+  "encoder_stopped": true
+}

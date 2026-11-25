@@ -1,0 +1,62 @@
+[
+  {
+    "path": "visual_recovery_v2.py",
+    "sha256": "8dd04109c6143ed50c821378f5192dfa6ac85764fa7c8fa3fb136502a647a230"
+  },
+  {
+    "path": "test_visual_recovery_v2.py",
+    "sha256": "8e73669e9c1e086987076cc1465047f6acda53e9cf99925ed15067966cf1a739"
+  },
+  {
+    "path": "recovery_journal_v2.py",
+    "sha256": "59667e3f176d1822c1a05191c99f6dcc2426d2568c781f9e8dfb886a5a72e448"
+  },
+  {
+    "path": "evaluate_recovery_v2.py",
+    "sha256": "1fb26e3bf4cd02f06b33b2fa7dd0ea06dcb128744da4a9bf236bb15d8a9f24fe"
+  },
+  {
+    "path": "audit_recovery_v2.py",
+    "sha256": "14c881b5973016f7e8a42ceabac2b64f028d6cfabc7c3caf1b6bd20a5ec5a49f"
+  },
+  {
+    "path": "visual_readout_integrity.py",
+    "sha256": "65df77cb23161bbf59f79d83a1a17658ebec982c70d4f71f9f0005d65346c840"
+  },
+  {
+    "path": "evaluate_guarded_record_memory.py",
+    "sha256": "c9c8011e22c8df1372cc9e81c5d2bd1d23604c7832783135535c67fb50526b45"
+  },
+  {
+    "path": "guarded_record_memory.py",
+    "sha256": "7401b36e3ba0655355859cbf7bcd7694af51176fc37b0c49cd9646dfc861dc05"
+  },
+  {
+    "path": "pixel_density_readout.py",
+    "sha256": "ae88e3a622b68027ffd3a16c23ea4dc51df23c4208c87b6a000cb7cf68635c76"
+  },
+  {
+    "path": "pixel_learning_curve.py",
+    "sha256": "5181bc55a90fee3394c518e8c70cf75a776b68efb80bb9b51c484441a70490b4"
+  },
+  {
+    "path": "pixel_readout_v2.py",
+    "sha256": "f411584515a5bd85b41f98b75fa7de13cdc036105bd009419267580deefb91a5"
+  },
+  {
+    "path": "pixel_feature_probe.py",
+    "sha256": "2cf4dd70dec337706819a9ac0853e3175e6c0ff19dc6140998a15849aeb8d9e6"
+  },
+  {
+    "path": "visual_memory_grid.py",
+    "sha256": "e7a4da1851c771e20fd2a1d3ab2cca34e6d064dc5c158005803d8d8f259a6335"
+  },
+  {
+    "path": "visual_context_probe.py",
+    "sha256": "c8142ba4dd3696dd6e7276b37f71c8b6972da92c8a1abbb19872bf0c83980c90"
+  },
+  {
+    "path": "brain-core/brain_pixel_codec.py",
+    "sha256": "5a80987ef6fc180ad59333c590037ef6e8ce4024ff1914fa9327ffe4ebd241a9"
+  }
+]

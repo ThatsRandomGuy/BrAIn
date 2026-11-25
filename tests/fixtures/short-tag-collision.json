@@ -1,0 +1,52 @@
+{
+  "kind": "out_of_radius",
+  "source": 0,
+  "bad": [
+    0,
+    2,
+    2,
+    3,
+    3,
+    1,
+    0,
+    0,
+    3,
+    2,
+    2,
+    0,
+    1,
+    2,
+    0,
+    1
+  ],
+  "receipt": {
+    "status": "accepted",
+    "values": [
+      0,
+      2,
+      2,
+      3,
+      3,
+      1,
+      0,
+      0,
+      3,
+      1,
+      2,
+      0,
+      1,
+      1,
+      0,
+      1
+    ],
+    "recovered": true,
+    "distance": 2,
+    "changed_positions": [
+      9,
+      13
+    ],
+    "candidate_checks": 1128,
+    "matches": 1,
+    "profile_sha256": "4593a43b6f2644318ef2b6f8f78aa8c9fe504fe39c59373e6d545d70254c25a0"
+  }
+}

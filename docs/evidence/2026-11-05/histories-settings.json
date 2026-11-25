@@ -1,0 +1,80 @@
+{
+  "seed": 2026110504,
+  "conditions": {
+    "verify": [
+      "visual",
+      "verify"
+    ],
+    "recovery": [
+      "visual",
+      "one-cell"
+    ],
+    "two": [
+      "visual",
+      "two-cell"
+    ],
+    "compact64": [
+      "visual",
+      "compact-64"
+    ],
+    "text": [
+      "text",
+      "verify"
+    ]
+  },
+  "checkpoints": [
+    1,
+    16,
+    64,
+    128
+  ],
+  "codebook": {
+    "version": 1,
+    "subjects": {
+      "2": "canopy detector",
+      "7": "delta camera",
+      "12": "supply beacon"
+    },
+    "values": {
+      "27": {
+        "label": "white staging cabinet",
+        "kind": "location"
+      },
+      "78": {
+        "label": "west observation cupboard",
+        "kind": "location"
+      },
+      "150": {
+        "label": "violet shipping crate",
+        "kind": "location"
+      },
+      "201": {
+        "label": "mezzanine service shelf",
+        "kind": "location"
+      },
+      "109": {
+        "label": "Elena Park",
+        "kind": "person"
+      },
+      "182": {
+        "label": "Samir Rao",
+        "kind": "person"
+      }
+    },
+    "aliases": {
+      "forest detector": 2,
+      "river camera": 7
+    }
+  },
+  "primary_compact_bits": 64,
+  "gates": {
+    "two_cell": "zero wrong assertions;all known facts answered;availability better than verify-only",
+    "compact64": "known answers match text;coverage matches full two-cell",
+    "safety": "zero wrong assertions/accepted frames;all pending and withheld-marker probes UNKNOWN with empty evidence",
+    "utility": "recovery strictly improves available queries vs verify-only and answers all known queries correctly"
+  },
+  "policy": "Frozen overlap ridge decoder;verify,48-candidate one-cell,1128-candidate two-cell,and predeclared64-bit compact two-cell. Unique checksum match only;allactive records mandatory.",
+  "freshness": "Exclude every earlier experiment PNG hash;no nonce selection based on readout. Samepacket/codebook acrossconditions.",
+  "controls": "Six slots queried per checkpoint in fresh processes;pending and withheld latest/prefix probes separate from semantic accuracy.",
+  "limits": "Six nested-history journals are not independent samples at each depth. Cached features are included in storage;no LLM tested."
+}

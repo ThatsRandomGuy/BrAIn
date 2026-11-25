@@ -24,3 +24,7 @@ The immediate priority is a stronger readout or explicitly costed error-correcti
 representation. The remaining three-cell failure should guide a fresh experiment,
 not trigger a post-hoc larger search until the old test passes. More reliable
 transport alone cannot establish a pixel-specific context advantage.
+
+## November 25 spatial-readout study
+
+The selected spatial readout did not pass the predefined improvement gate. [Result, costs and limitations](evidence/spatial-readout-2026-11-25/README.md). The next research decision should use this held-out result; production profile changes require a separate reviewed change and fresh journal evaluation.

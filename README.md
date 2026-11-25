@@ -85,6 +85,11 @@ compression or a storage advantage.**
 
 [Evidence, limitations and reproduction levels](docs/results.md)
 
+A separate [November 25 spatial-readout study](docs/evidence/spatial-readout-2026-11-25/README.md)
+did not justify a larger decoder: 485/512 raw images versus 493/512 for the
+baseline on a new held-out set, with roughly four times the decoder storage.
+The default remains unchanged; the negative result is retained.
+
 ## Engineering focus
 
 - **Never silently reuse stale memory.** Any missing, pending or unrecoverable

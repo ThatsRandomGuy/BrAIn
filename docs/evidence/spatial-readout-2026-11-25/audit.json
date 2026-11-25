@@ -1,0 +1,10 @@
+{
+  "encoder_stopped": true,
+  "fresh_test_images": 512,
+  "fresh_validation_images": 64,
+  "passed": true,
+  "predictions_replayed": true,
+  "primary_gate_passed": false,
+  "selection_replayed": true,
+  "training_images": 512
+}

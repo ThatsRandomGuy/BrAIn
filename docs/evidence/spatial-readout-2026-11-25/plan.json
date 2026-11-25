@@ -1,0 +1,73 @@
+{
+  "alphas": [
+    0.001,
+    0.01,
+    0.1
+  ],
+  "baseline_model_sha256": "1d09569fd12bd8cd7f4d04daa20abe0b2cda17c10140c802e5ad8e15fb00079e",
+  "encoder_fingerprints": {
+    "config_sha256": "0bf4fecd27123f0c1b3586cbf49b37094625a43291f3965e64af743e0dbc14af",
+    "exe_sha256": "e766ac7362a4892e2bd34f9348fb4b3dbbfef5558be9aea83c5ab7871bcbf84e",
+    "mmproj_sha256": "b1a82259702816a5330d7bd7607cd9676b11780e79ff7348c21103ff3ce49bd0"
+  },
+  "integrity": "Study-scoped envelope shared across decoders;not a production-profile receipt",
+  "max_recovery_candidates": 1128,
+  "primary_gate": "Raw complete-image accuracy improves>=1 percentage point,exact two-sided McNemar p<=.05,cell accuracy not lower,correct accepted recovery coverage not lower,and zero wrong accepted streams. Report decoder byte cost.",
+  "reference_feature_profile": {
+    "decoder_spec": {
+      "alpha": 0.001,
+      "id": "ridge_overlap_0.001",
+      "method": "ridge",
+      "representation": "overlap"
+    },
+    "encoding": "four-color-row-major-2bit-v1",
+    "feature_tokens": 49,
+    "feature_width": 2560,
+    "grid": [
+      4,
+      4
+    ],
+    "image_size": [
+      224,
+      224
+    ],
+    "model_sha256": "1d09569fd12bd8cd7f4d04daa20abe0b2cda17c10140c802e5ad8e15fb00079e",
+    "palette": [
+      [
+        230,
+        25,
+        25
+      ],
+      [
+        20,
+        170,
+        65
+      ],
+      [
+        25,
+        80,
+        230
+      ],
+      [
+        245,
+        210,
+        20
+      ]
+    ],
+    "version": 1
+  },
+  "representations": [
+    "concat4",
+    "concat9"
+  ],
+  "scope": "No production model replacement,language-model inference,context-saving or smaller-model claim.",
+  "seed": 2026112502,
+  "selection": "validation whole images,cells,fewer features,smaller alpha;no test features before selection",
+  "source_sha256": "89f0084df5a0bbd8168119aad8786e1e6d2bd0a2fa7519b08cb1d27f7c115685",
+  "tag_bits": 64,
+  "test_images": 512,
+  "training_images": 512,
+  "training_metadata_sha256": "c3cdeb1ef1c89d8163ab29605bff6d59d87d1dd9ebb8702449db7b2f75cd056a",
+  "validation_images": 64,
+  "version": 1
+}

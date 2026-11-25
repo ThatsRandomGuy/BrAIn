@@ -20,10 +20,11 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - run: python -m pip install -e ".[vision,dev]"
-      - run: python -m ruff check brain_pixels tests tools
-      - run: python -m ruff format --check brain_pixels tests tools
+      - run: python -m ruff check brain_pixels tests tools research/__init__.py research/run_spatial_readout.py research/audit_spatial_readout.py research/export_training.py research/verify_spatial_evidence.py
+      - run: python -m ruff format --check brain_pixels tests tools research/__init__.py research/run_spatial_readout.py research/audit_spatial_readout.py research/export_training.py research/verify_spatial_evidence.py
       - run: python tools/run_checks.py
       - run: python tools/verify_evidence.py
+      - run: python -m research.verify_spatial_evidence docs/evidence/spatial-readout-2026-11-25
   packaging:
     runs-on: ubuntu-latest
     steps:

@@ -92,3 +92,7 @@ The packaged verifier checks the smaller public evidence level described above.
 The learned readout's bytes and profile are unchanged; packaging did not retrain
 or retune it. The old 50-prompt structured-reasoning comparison is preserved as
 historical development work in `docs/legacy/`, not as current pixel evidence.
+
+## Subsequent readout study: November 25
+
+The selected spatial readout did not pass the predefined improvement gate. This is a distinct fresh study, not a revised score on the November 5 images. [Read the comparison](evidence/spatial-readout-2026-11-25/README.md).
